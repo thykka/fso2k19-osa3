@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const apiUrl = '/api/notes';
+
 app.use(cors());
 app.use(express.static('build'));
 app.use(bodyParser.json());
@@ -21,11 +23,11 @@ const generateId = (items) => 1 + items.reduceRight(
   -1
 );
 
-app.get('/notes', (req, res) => {
+app.get(apiUrl, (req, res) => {
   res.json(notes);
 });
 
-app.get('/notes/:id', (req, res) => {
+app.get(apiUrl + '/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
   const note = notes.find(note => note.id === id);
 
@@ -36,7 +38,7 @@ app.get('/notes/:id', (req, res) => {
   res.json(note);
 });
 
-app.post('/notes', (req, res) => {
+app.post(apiUrl, (req, res) => {
   const { content, important } = req.body;
   if(!content) {
     return res.status(400).json({
@@ -56,7 +58,7 @@ app.post('/notes', (req, res) => {
   res.json(note);
 });
 
-app.delete('/notes/:id', (req, res) => {
+app.delete(apiUrl + '/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
   notes = notes.filter(note => note.id !== id);
 
