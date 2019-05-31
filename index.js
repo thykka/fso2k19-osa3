@@ -1,13 +1,16 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
+app.use(cors());
 app.use(bodyParser.json());
 
 let notes = [
   {
-    id: 0,
-    name: 'heheee'
+    id: '000000',
+    content: 'heheee',
+    important: false,
   }
 ];
 
@@ -65,9 +68,9 @@ app.delete('/notes/:id', (req, res) => {
   console.log(notes);
 });
 
-const port = 3001;
+const PORT = process.env.PORT || 3001;
 
-app.listen(port, () => {
-  console.log('Listening: http://localhost:' + port);
+app.listen(PORT, () => {
+  console.log('Listening: http://localhost:' + PORT);
 });
 
