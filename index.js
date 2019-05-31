@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 
 app.use(cors());
+app.use(express.static('build'));
 app.use(bodyParser.json());
 
 let notes = [
@@ -19,11 +20,6 @@ const generateId = (items) => 1 + items.reduceRight(
   (max, item) => item.id < max ? max : item.id,
   -1
 );
-
-
-app.get('/', (req, res) => {
-  res.send('Hello, World!');
-});
 
 app.get('/notes', (req, res) => {
   res.json(notes);
