@@ -1,0 +1,27 @@
+@apiUrl = http://localhost:3001
+
+###
+
+# @name getNotes
+GET {{apiUrl}}/notes
+
+###
+
+# @name getNote
+@noteId = 0
+GET {{apiUrl}}/notes/{{noteId}}
+
+###
+
+# @name postNote
+POST {{apiUrl}}/notes
+Content-Type: application/json
+
+{
+  "content": "VSC REST-Client sopii hyvin REST-APIen testaamiseen"
+}
+
+###
+
+# @name deleteNote
+DELETE {{apiUrl}}/notes/{{noteId}}
