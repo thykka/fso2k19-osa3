@@ -8,7 +8,7 @@ GET {{apiUrl}}/notes
 ###
 
 # @name getNote
-@noteId = 0
+@noteId = 5d0b3e5e16ad69422268d75c
 GET {{apiUrl}}/notes/{{noteId}}
 
 ###
@@ -18,7 +18,8 @@ POST {{apiUrl}}/notes
 Content-Type: application/json
 
 {
-  "content": "VSC REST-Client sopii hyvin REST-APIen testaamiseen"
+  "content": "VSC REST-Client sopii hyvin REST-APIen testaamiseen",
+  "important": true
 }
 
 ###

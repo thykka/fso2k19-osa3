@@ -2,26 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mongoose = require('mongoose');
-
-const EnvInterface = require('./env-interface.js');
-
-
-
-const env = new EnvInterface();
-const dbUrl = `mongodb+srv://${ env.user }:${ env.pass }@thykka-fso2k19-cswvc.mongodb.net/note-app?retryWrites=true&w=majority`;
-mongoose.connect(dbUrl, { useNewUrlParser: true });
-
-
-
-const noteSchema = new mongoose.Schema({
-  content: String,
-  date: Date,
-  important: Boolean,
-});
-const Note = mongoose.model('Note', noteSchema);
-
-
+const Note = require('./models/note');
 
 const apiUrl = '/api/notes';
 
@@ -37,30 +18,21 @@ let notes = [
   }
 ];
 
-// https://jsperf.com/generateid-01/1
-const generateId = (items) => 1 + items.reduceRight(
-  (max, item) => item.id < max ? max : item.id,
-  -1
-);
-
 app.get(apiUrl, (req, res) => {
-  Note.find({}).then(notes => res.json(notes));
+  Note.find({})
+    .then(notes =>
+      res.json(
+        notes.map(note => note.toJSON())
+      )
+    );
 });
 
-/*
-app.get(apiUrl, (req, res) => {
-  res.json(notes);
-});
-*/
 app.get(apiUrl + '/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  const note = notes.find(note => note.id === id);
-
-  if(!note) {
-    res.status(404).end();
-    return;
-  }
-  res.json(note);
+  const { id } = req.params;
+  console.log('Fetching note ' + id);
+  Note.findById(id)
+    .then(note => res.json(note.toJSON()))
+    .catch(err => res.json(err));
 });
 
 app.post(apiUrl, (req, res) => {
@@ -71,24 +43,23 @@ app.post(apiUrl, (req, res) => {
     });
   }
 
-  const note = {
+  const note = new Note({
     content,
     important: !!important,
-    date: new Date(),
-    id: generateId(notes)
-  };
+    date: new Date()
+  });
 
-  notes = [ ...notes, note ];
-
-  res.json(note);
+  note.save()
+    .then(savedNote =>
+      res.json(savedNote.toJSON())
+    );
 });
 
 app.delete(apiUrl + '/:id', (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  notes = notes.filter(note => note.id !== id);
-
-  res.status(204).end();
-  console.log(notes);
+  Note.findOneAndDelete(
+    { _id: req.params.id },
+    () => res.status(204).end()
+  );
 });
 
 const PORT = process.env.PORT || 3001;
