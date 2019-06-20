@@ -2,6 +2,26 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const mongoose = require('mongoose');
+
+const EnvInterface = require('./env-interface.js');
+
+
+
+const env = new EnvInterface();
+const dbUrl = `mongodb+srv://${ env.user }:${ env.pass }@thykka-fso2k19-cswvc.mongodb.net/note-app?retryWrites=true&w=majority`;
+mongoose.connect(dbUrl, { useNewUrlParser: true });
+
+
+
+const noteSchema = new mongoose.Schema({
+  content: String,
+  date: Date,
+  important: Boolean,
+});
+const Note = mongoose.model('Note', noteSchema);
+
+
 
 const apiUrl = '/api/notes';
 
@@ -24,9 +44,14 @@ const generateId = (items) => 1 + items.reduceRight(
 );
 
 app.get(apiUrl, (req, res) => {
-  res.json(notes);
+  Note.find({}).then(notes => res.json(notes));
 });
 
+/*
+app.get(apiUrl, (req, res) => {
+  res.json(notes);
+});
+*/
 app.get(apiUrl + '/:id', (req, res) => {
   const id = parseInt(req.params.id, 10);
   const note = notes.find(note => note.id === id);
